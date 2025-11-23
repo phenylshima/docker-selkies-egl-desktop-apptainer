@@ -1,0 +1,42 @@
+BootStrap: localimage
+From: images/docker-nvidia-egl-desktop-update.sif
+
+%post
+  export NVIDIA_DRIVER_VERSION="${NVIDIA_DRIVER_VERSION:-535.274.02}"
+  export NVIDIA_DRIVER_ARCH="${NVIDIA_DRIVER_ARCH:-x86_64}"
+  export CUDA_VERSION="${CUDA_VERSION:-12.9}" # TEMPORARY: Cap CUDA version to 12.9 if the detected version is 13.0 or higher for NVRTC compatibility, https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/4655
+
+  # Install NVIDIA GPU driver components without kernel modules or host components
+  cd /tmp
+  # If version is different, new installer will overwrite the existing components
+  # Check multiple sources in order to probe both consumer and datacenter driver versions
+  curl -fsSL -O "https://international.download.nvidia.com/XFree86/Linux-${NVIDIA_DRIVER_ARCH}/${NVIDIA_DRIVER_VERSION}/NVIDIA-Linux-${NVIDIA_DRIVER_ARCH}-${NVIDIA_DRIVER_VERSION}.run" \
+    || curl -fsSL -O "https://international.download.nvidia.com/tesla/${NVIDIA_DRIVER_VERSION}/NVIDIA-Linux-${NVIDIA_DRIVER_ARCH}-${NVIDIA_DRIVER_VERSION}.run" \
+    || echo 'Failed NVIDIA GPU driver download'
+  # Extract installer before installing
+  rm -rf "NVIDIA-Linux-${NVIDIA_DRIVER_ARCH}-${NVIDIA_DRIVER_VERSION}"
+  sh "NVIDIA-Linux-${NVIDIA_DRIVER_ARCH}-${NVIDIA_DRIVER_VERSION}.run" -x
+  cd "NVIDIA-Linux-${NVIDIA_DRIVER_ARCH}-${NVIDIA_DRIVER_VERSION}"
+  # Run NVIDIA driver installation without the kernel modules and host components
+  ./nvidia-installer --silent \
+                    --no-kernel-module \
+                    --install-compat32-libs \
+                    --no-nouveau-check \
+                    --no-nvidia-modprobe \
+                    --no-systemd \
+                    --no-rpms \
+                    --no-backup \
+                    --no-check-for-alternate-installs
+  rm -rf /tmp/NVIDIA*
+
+  # Install CUDA toolkit (includes NVRTC)
+  ID="$(sed -n 's/^ID=\(.*\)/\1/p' /etc/os-release | tr -d '"')"
+  VERSION_ID="$(sed -n 's/^VERSION_ID=\(.*\)/\1/p' /etc/os-release | tr -d '"' | sed 's/\.//g')"
+  CUDA_VERSION_MAJOR="$(echo ${CUDA_VERSION} | cut -d. -f1)"
+  CUDA_VERSION_MINOR="$(echo ${CUDA_VERSION} | cut -d. -f2)"
+  curl -fsSL "https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID}/${NVIDIA_DRIVER_ARCH}/cuda-keyring_1.1-1_all.deb" -o /tmp/cuda-keyring.deb \
+    && dpkg -i /tmp/cuda-keyring.deb \
+    && rm -f /tmp/cuda-keyring.deb
+  apt-get update \
+    && apt-get -y install "cuda-toolkit-${CUDA_VERSION_MAJOR}-${CUDA_VERSION_MINOR}" \
+    && rm -rf /var/lib/apt/lists/*

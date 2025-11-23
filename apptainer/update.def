@@ -1,0 +1,6 @@
+BootStrap: localimage
+From: images/docker-nvidia-egl-desktop.sif
+
+%post
+  apt-mark hold wine-staging
+  apt-get update && apt-get upgrade -f -y && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*

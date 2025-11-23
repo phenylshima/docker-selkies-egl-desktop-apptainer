@@ -1,0 +1,13 @@
+BootStrap: localimage
+From: images/docker-nvidia-egl-desktop-nvidia.sif
+
+%files
+  ../entrypoint.sh /etc/entrypoint.sh
+  ../selkies-gstreamer-entrypoint.sh /etc/selkies-gstreamer-entrypoint.sh
+  ../kasmvnc-entrypoint.sh /etc/kasmvnc-entrypoint.sh
+  ../supervisord.conf /etc/supervisord.conf
+  ../nginx.conf /etc/nginx/sites-available/default
+
+%post
+  mkdir -p /var/lib/nginx/
+  chmod -R 777 /var/lib/nginx/
