@@ -10,6 +10,7 @@ mkdir -pm755 "${SINGULARITY_SELKIES_LOGS_DIR}"
 mkdir -pm755 /tmp/docker-nvidia-egl-desktop-tmp
 
 singularity shell --nv \
+  --pid \
   --no-mount cwd,tmp \
   --bind /tmp/docker-nvidia-egl-desktop-tmp:/tmp \
   --bind "${SINGULARITY_SELKIES_LOGS_DIR}:/var/log/" \
