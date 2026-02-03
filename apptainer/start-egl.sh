@@ -1,16 +1,25 @@
 #!/bin/bash
 
-export SINGULARITY_SELKIES_SCRATCH_HOME="egl-home"
+SINGULARITY_SELKIES_SCRATCH_HOME="egl-home"
 mkdir -pm755 "${SINGULARITY_SELKIES_SCRATCH_HOME}"
 
-export SINGULARITY_SELKIES_LOGS_DIR="images/logs"
+SINGULARITY_SELKIES_LOGS_DIR="images/logs"
 rm "${SINGULARITY_SELKIES_LOGS_DIR}"/*.log 2> /dev/null || echo 'No existing log files to remove'
 mkdir -pm755 "${SINGULARITY_SELKIES_LOGS_DIR}"
 
 mkdir -pm755 /tmp/docker-nvidia-egl-desktop-tmp
 
+NGINX_PORT=7000
+SELKIES_PORT=8081
+SELKIES_METRICS_HTTP_PORT=9081
+SELKIES_TURN_PORT=3478
+
 singularity exec --nv \
   --pid \
+  --env NGINX_PORT=${NGINX_PORT} \
+  --env SELKIES_PORT=${SELKIES_PORT} \
+  --env SELKIES_METRICS_HTTP_PORT=${SELKIES_METRICS_HTTP_PORT} \
+  --env SELKIES_TURN_PORT=${SELKIES_TURN_PORT} \
   --no-mount cwd,tmp \
   --bind /tmp/docker-nvidia-egl-desktop-tmp:/tmp \
   --bind "${SINGULARITY_SELKIES_LOGS_DIR}:/var/log/" \

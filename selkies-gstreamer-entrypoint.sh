@@ -49,6 +49,16 @@ fi
 echo 'Waiting for X Socket' && until [ -S "/tmp/.X11-unix/X${DISPLAY#*:}" ]; do sleep 0.5; done && echo 'X Server is ready'
 
 # Configure NGINX
+export NGINX_PORT="${NGINX_PORT:-7000}"
+export SELKIES_PORT="${SELKIES_PORT:-8081}"
+export SELKIES_METRICS_HTTP_PORT="${SELKIES_METRICS_HTTP_PORT:-9081}"
+export SELKIES_TURN_PORT="${SELKIES_TURN_PORT:-3478}"
+cat /etc/nginx/templates/default.conf.template \
+  | envsubst '$NGINX_PORT' \
+  | envsubst '$SELKIES_PORT' \
+  | envsubst '$SELKIES_METRICS_HTTP_PORT' \
+  | envsubst '$SELKIES_TURN_PORT' \
+> /etc/nginx/sites-available/default
 if [ "$(echo ${SELKIES_ENABLE_BASIC_AUTH} | tr '[:upper:]' '[:lower:]')" != "false" ]; then htpasswd -bcm "${XDG_RUNTIME_DIR}/.htpasswd" "${SELKIES_BASIC_AUTH_USER:-${USER}}" "${SELKIES_BASIC_AUTH_PASSWORD:-${PASSWD}}"; fi
 
 # Clear the cache registry
@@ -57,8 +67,8 @@ rm -rf "${HOME}/.cache/gstreamer-1.0"
 # Start the Selkies WebRTC HTML5 remote desktop application
 selkies-gstreamer \
     --addr="localhost" \
-    --port="${SELKIES_PORT:-8081}" \
+    --port="${SELKIES_PORT}" \
     --enable_basic_auth="false" \
     --enable_metrics_http="true" \
-    --metrics_http_port="${SELKIES_METRICS_HTTP_PORT:-9081}" \
+    --metrics_http_port="${SELKIES_METRICS_HTTP_PORT}" \
     $@

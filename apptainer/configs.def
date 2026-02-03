@@ -6,11 +6,12 @@ From: images/docker-nvidia-egl-desktop-nvidia.sif
   ../selkies-gstreamer-entrypoint.sh /etc/selkies-gstreamer-entrypoint.sh
   ../kasmvnc-entrypoint.sh /etc/kasmvnc-entrypoint.sh
   ../supervisord.conf /etc/supervisord.conf
-  ../nginx.conf /etc/nginx/sites-available/default
+  ../nginx.template /etc/nginx/templates/default.conf.template
 
 %post
   mkdir -p /var/lib/nginx/
   chmod -R 777 /var/lib/nginx/
+  chmod 777 /etc/nginx/sites-available/default
 
   mkdir -p /opt/plasma-bypass/bin
   mv /usr/bin/plasmashell /opt/plasma-bypass/bin/plasmashell
