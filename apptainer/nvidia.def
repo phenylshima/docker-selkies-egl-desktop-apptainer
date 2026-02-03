@@ -2,7 +2,7 @@ BootStrap: localimage
 From: images/docker-nvidia-egl-desktop-update.sif
 
 %post
-  export NVIDIA_DRIVER_VERSION="${NVIDIA_DRIVER_VERSION:-535.274.02}"
+  export NVIDIA_DRIVER_VERSION="${NVIDIA_DRIVER_VERSION:-535.288.01}"
   export NVIDIA_DRIVER_ARCH="${NVIDIA_DRIVER_ARCH:-x86_64}"
   export CUDA_VERSION="${CUDA_VERSION:-12.9}" # TEMPORARY: Cap CUDA version to 12.9 if the detected version is 13.0 or higher for NVRTC compatibility, https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/4655
 
