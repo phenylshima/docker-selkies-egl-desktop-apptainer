@@ -16,6 +16,7 @@ SELKIES_TURN_PORT=3478
 
 singularity exec --nv \
   --pid \
+  --env DISPLAY=:0 \
   --env NGINX_PORT=${NGINX_PORT} \
   --env SELKIES_PORT=${SELKIES_PORT} \
   --env SELKIES_METRICS_HTTP_PORT=${SELKIES_METRICS_HTTP_PORT} \
