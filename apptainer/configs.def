@@ -11,3 +11,8 @@ From: images/docker-nvidia-egl-desktop-nvidia.sif
 %post
   mkdir -p /var/lib/nginx/
   chmod -R 777 /var/lib/nginx/
+
+  mkdir -p /opt/plasma-bypass/bin
+  mv /usr/bin/plasmashell /opt/plasma-bypass/bin/plasmashell
+  sed -i 's|Exec=/usr/bin/plasmashell|Exec=/opt/plasma-bypass/bin/plasmashell|' /usr/share/applications/org.kde.plasmashell.desktop
+  sed -i 's|Exec=/usr/bin/plasmashell|Exec=/opt/plasma-bypass/bin/plasmashell|' /etc/xdg/autostart/org.kde.plasmashell.desktop

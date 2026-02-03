@@ -16,5 +16,4 @@ singularity shell --nv \
   --bind "${SINGULARITY_SELKIES_LOGS_DIR}:/var/log/" \
   --home "${SINGULARITY_SELKIES_SCRATCH_HOME}:/home/ubuntu" \
   --env "TZ=UTC,DISPLAY_SIZEW=1920,DISPLAY_SIZEH=1080,DISPLAY_REFRESH=60,DISPLAY_DPI=96,DISPLAY_CDEPTH=24,PASSWD=mypasswd,SELKIES_ENCODER=nvh264enc,SELKIES_VIDEO_BITRATE=8000,SELKIES_FRAMERATE=60,SELKIES_AUDIO_BITRATE=128000,SELKIES_BASIC_AUTH_PASSWORD=lithium" \
-  --security="apparmor:unprivileged_userns" \
   images/docker-nvidia-egl-desktop-nonroot.sif
